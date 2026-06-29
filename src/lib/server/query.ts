@@ -22,7 +22,18 @@ export type VehicleData = {
 	insurance: Record<string, unknown>;
 };
 
-export async function lookupPlate(plate: string): Promise<VehicleData> {
+// ponytail: global lock — server stores query state per PHP session, not per tabId.
+// Concurrent lookups would corrupt each other's results.
+let lookupQueue: Promise<unknown> = Promise.resolve();
+
+export function lookupPlate(plate: string): Promise<VehicleData> {
+	const result = lookupQueue.then(() => doLookup(plate));
+	// Chain so the next caller waits, but don't let a failure block the queue forever
+	lookupQueue = result.catch(() => {});
+	return result;
+}
+
+async function doLookup(plate: string): Promise<VehicleData> {
 	const session = await getSession();
 	const tabId = makeTabId();
 	debug('query', `looking up plate=${plate} tabId=${tabId}`);
@@ -34,10 +45,14 @@ export async function lookupPlate(plate: string): Promise<VehicleData> {
 	debug('query', `get_page.php status=${pageRes.status}`);
 
 	// Submit query
-	await processPost(session, '7245949645153563', tabId, {
+	const submitResult = await processPost(session, '7245949645153563', tabId, {
 		'hidden-rendszam': plate,
 		'hidden-valasztott_adatkorok': DATA_CATEGORIES
 	});
+
+	const valaszSzoveg = (submitResult?.ClientVariable as Record<string, string> | undefined)
+		?.valasz_szoveg;
+	if (valaszSzoveg) throw new Error(valaszSzoveg);
 
 	// Confirm response ready
 	await processPost(session, '7353894522179297', tabId);
