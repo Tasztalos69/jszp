@@ -12,6 +12,18 @@ let lastUsed = 0;
 let status: SessionStatus = 'initializing';
 let authPromise: Promise<void> | null = null;
 
+const subscribers = new Set<(s: SessionStatus) => void>();
+
+export function subscribe(fn: (s: SessionStatus) => void): () => void {
+	subscribers.add(fn);
+	return () => subscribers.delete(fn);
+}
+
+function setStatus(s: SessionStatus) {
+	status = s;
+	for (const fn of subscribers) fn(s);
+}
+
 export function getStatus(): SessionStatus {
 	return status;
 }
@@ -34,7 +46,7 @@ async function isAlive(): Promise<boolean> {
 
 async function doAuth(): Promise<void> {
 	debug('session', 'starting auth');
-	status = 'initializing';
+	setStatus('initializing');
 	// ponytail: 2-min hard cap on SAML flow (Playwright can hang on slow idp)
 	const timeout = new Promise<never>((_, reject) =>
 		setTimeout(() => reject(new Error('auth timeout after 120s')), 120_000)
@@ -43,7 +55,7 @@ async function doAuth(): Promise<void> {
 	session = result;
 	lastUsed = Date.now();
 	debug('session', `auth complete, got ${session.cookies.split(';').length} cookies`);
-	status = 'alive';
+	setStatus('alive');
 }
 
 export async function getSession(): Promise<Session> {
@@ -74,7 +86,7 @@ export async function getSession(): Promise<Session> {
 	authPromise = doAuth()
 		.catch(async (e) => {
 			session = null;
-			status = 'broken';
+			setStatus('broken');
 			await notify(`JSZP auth failed: ${e}`);
 			throw e;
 		})

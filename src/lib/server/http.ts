@@ -32,7 +32,8 @@ export async function processPost(
 	});
 	const text = await res.text();
 	debug('http', `process.php mapper=${mapperID} status=${res.status} body=${text.slice(0, 300)}`);
-	if (!res.ok) throw new Error(`process.php mapper=${mapperID} HTTP ${res.status}: ${text.slice(0, 200)}`);
+	if (!res.ok)
+		throw new Error(`process.php mapper=${mapperID} HTTP ${res.status}: ${text.slice(0, 200)}`);
 	let parsed: Record<string, unknown>;
 	try {
 		parsed = JSON.parse(text);

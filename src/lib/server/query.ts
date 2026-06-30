@@ -68,8 +68,8 @@ async function doLookup(plate: string): Promise<VehicleData> {
 	]);
 
 	const requestId =
-		(basic?.CtrlValue as Record<string, { VALUE: string }>)?.['header-kerelem_azonosito']
-			?.VALUE ?? '';
+		(basic?.CtrlValue as Record<string, { VALUE: string }>)?.['header-kerelem_azonosito']?.VALUE ??
+		'';
 
 	return { plate, requestId, basic, origin, traffic, mot, odometer, insurance };
 }

@@ -41,9 +41,7 @@ export async function authenticate(): Promise<Session> {
 		debug('auth', 'submitting TOTP auth form');
 		await page.evaluate(() =>
 			(
-				document.getElementById(
-					'urn:eksz.gov.hu:1.0:azonositas:kau:2:uk:totp'
-				) as HTMLFormElement
+				document.getElementById('urn:eksz.gov.hu:1.0:azonositas:kau:2:uk:totp') as HTMLFormElement
 			).submit()
 		);
 
