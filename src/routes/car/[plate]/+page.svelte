@@ -1,5 +1,6 @@
 <script lang="ts">
 	import Plate from '$lib/components/Plate.svelte';
+	import StarIcon from '$lib/components/StarIcon.svelte';
 	import StatusBadge from '$lib/components/StatusBadge.svelte';
 	import OdometerList from '$lib/components/OdometerList.svelte';
 	import { resolve } from '$app/paths';
@@ -10,6 +11,17 @@
 
 	let copied = $state(false);
 	let remarksOpen = $state(false);
+	let isFavourite = $state(data.isFavourite);
+
+	async function toggleFav() {
+		isFavourite = !isFavourite;
+		const res = await fetch('/api/favourite', {
+			method: 'POST',
+			headers: { 'content-type': 'application/json' },
+			body: JSON.stringify({ plate: v.plate })
+		});
+		if (!res.ok) isFavourite = !isFavourite;
+	}
 
 	function copyLink() {
 		navigator.clipboard.writeText(window.location.href).then(() => {
@@ -29,6 +41,9 @@
 	const kgfbOk = $derived(v.kgfb.toLowerCase() === 'igen');
 	const queryDate = $derived(v.queryDate.replace(/^Az adatszolgáltatás időpontja:\s*/i, ''));
 	const categoryLabel = $derived(v.category.replace(/^[A-Z]\d+\s*-\s*/i, '').trim());
+	const cachedDate = $derived(
+		new Date(data.cachedAt).toLocaleString('hu-HU', { dateStyle: 'short', timeStyle: 'short' })
+	);
 
 	// Chevron SVG pattern for registration card — defined here to avoid escaping issues in template
 	const chevronPattern = `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='12'%3E%3Cpolyline points='0,12 12,0 24,12' fill='none' stroke='rgba(0%2C60%2C30%2C0.07)' stroke-width='1' stroke-linejoin='round'/%3E%3C/svg%3E")`;
@@ -60,47 +75,66 @@
 			>
 			Keresés
 		</a>
-		<button
-			onclick={copyLink}
-			aria-label="Link másolása"
-			class="flex items-center gap-1.5 text-slate-500 hover:text-slate-700 border border-slate-200 hover:border-slate-400 rounded-md px-3 py-2 text-sm min-h-[36px] transition-colors cursor-pointer"
-		>
-			{#if copied}
-				<svg
-					width="15"
-					height="15"
-					viewBox="0 0 24 24"
-					fill="none"
-					stroke="currentColor"
-					stroke-width="2.5"
-					stroke-linecap="round"
-					stroke-linejoin="round"
-					aria-hidden="true"><polyline points="20 6 9 17 4 12" /></svg
+		<div class="flex items-center gap-3">
+			{#if data.fromCache}
+				<span class="text-xs text-slate-400 hidden sm:inline">{cachedDate}</span>
+				<a
+					href={resolve(`/car/${v.plate}?refresh=1`)}
+					class="text-xs font-medium text-sky-700 hover:underline">Frissítés</a
 				>
-				Másolva
-			{:else}
-				<svg
-					width="15"
-					height="15"
-					viewBox="0 0 24 24"
-					fill="none"
-					stroke="currentColor"
-					stroke-width="2.5"
-					stroke-linecap="round"
-					stroke-linejoin="round"
-					aria-hidden="true"
-					><rect x="9" y="9" width="13" height="13" rx="2" /><path
-						d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"
-					/></svg
-				>
-				Másolás
 			{/if}
-		</button>
+			<button
+				onclick={copyLink}
+				aria-label="Link másolása"
+				class="flex items-center gap-1.5 text-slate-500 hover:text-slate-700 border border-slate-200 hover:border-slate-400 rounded-md px-3 py-2 text-sm min-h-[36px] transition-colors cursor-pointer"
+			>
+				{#if copied}
+					<svg
+						width="15"
+						height="15"
+						viewBox="0 0 24 24"
+						fill="none"
+						stroke="currentColor"
+						stroke-width="2.5"
+						stroke-linecap="round"
+						stroke-linejoin="round"
+						aria-hidden="true"><polyline points="20 6 9 17 4 12" /></svg
+					>
+					Másolva
+				{:else}
+					<svg
+						width="15"
+						height="15"
+						viewBox="0 0 24 24"
+						fill="none"
+						stroke="currentColor"
+						stroke-width="2.5"
+						stroke-linecap="round"
+						stroke-linejoin="round"
+						aria-hidden="true"
+						><rect x="9" y="9" width="13" height="13" rx="2" /><path
+							d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"
+						/></svg
+					>
+					Másolás
+				{/if}
+			</button>
+		</div>
 	</header>
 
 	<div class="max-w-2xl mx-auto px-4 sm:px-6 py-6 sm:py-8 flex flex-col gap-6">
 		<!-- Plate -->
-		<div class="flex justify-center">
+		<div class="flex justify-center items-center gap-4">
+			<button
+				onclick={toggleFav}
+				aria-label={isFavourite ? 'Eltávolítás a kedvencekből' : 'Hozzáadás a kedvencekhez'}
+				class="transition-colors cursor-pointer"
+				class:text-amber-400={isFavourite}
+				class:text-slate-300={!isFavourite}
+			>
+				<StarIcon filled={isFavourite} size={28} />
+			</button>
+
 			<Plate value={v.plate} />
 		</div>
 

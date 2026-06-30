@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { goto, beforeNavigate, afterNavigate } from '$app/navigation';
 	import PlateInput from '$lib/components/PlateInput.svelte';
+	import StarIcon from '$lib/components/StarIcon.svelte';
 	import type { PageData } from './$types.js';
 	import { resolve } from '$app/paths';
 
@@ -56,6 +57,8 @@
 		alive: { label: 'JSZP kapcsolat aktív', dot: 'bg-green-500' },
 		broken: { label: 'Kapcsolat sikertelen', dot: 'bg-red-500' }
 	};
+
+	const favState = Object.fromEntries(data.recent.map((e) => [e.plate, e.isFavourite]));
 </script>
 
 <svelte:head>
@@ -94,7 +97,8 @@
 
 			<button
 				type="submit"
-				class="flex items-center justify-center gap-2 w-full min-h-[48px] bg-slate-900 hover:bg-slate-800 active:scale-[0.98] text-white font-semibold text-base rounded-lg transition-colors cursor-pointer"
+				disabled={serverStatus !== 'alive'}
+				class="flex items-center justify-center gap-2 w-full min-h-[48px] bg-slate-900 hover:bg-slate-800 active:scale-[0.98] text-white font-semibold text-base rounded-lg transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none"
 			>
 				Lekérdezés
 				<svg
@@ -112,7 +116,37 @@
 		</form>
 	</main>
 
+	<!-- Recent searches -->
+	{#if data.recent.length > 0}
+		{@const sorted = [...data.recent].sort(
+			(a, b) => (favState[b.plate] ? 1 : 0) - (favState[a.plate] ? 1 : 0)
+		)}
+		<div class="w-full max-w-md flex flex-col gap-2">
+			<p class="text-xs font-bold uppercase tracking-widest text-slate-400">Korábbi lekérdezések</p>
+			{#each sorted as entry (entry.plate)}
+				<a
+					href={resolve(`/car/${entry.plate}`)}
+					class="bg-white border border-slate-200 rounded-xl px-4 py-3 flex items-center justify-between gap-3 hover:border-slate-400 transition-colors shadow-sm"
+				>
+					<div class="flex items-center gap-2.5">
+						{#if favState[entry.plate]}
+							<span class="text-amber-400 shrink-0"><StarIcon filled size={14} /></span>
+						{/if}
+						<span class="plate-text">{entry.plate}</span>
+					</div>
+					<span class="text-xs text-slate-400 shrink-0">
+						{new Date(entry.fetchedAt).toLocaleString('hu-HU', {
+							dateStyle: 'short',
+							timeStyle: 'short'
+						})}
+					</span>
+				</a>
+			{/each}
+		</div>
+	{/if}
+
 	<!-- Status card -->
+	<div class="w-full max-w-md border-t border-slate-200 mt-2"></div>
 	<div
 		class="w-full max-w-md bg-white border border-slate-200 rounded-xl px-5 py-4 shadow-sm flex items-center justify-between gap-4"
 	>
@@ -126,3 +160,13 @@
 		{/if}
 	</div>
 </div>
+
+<style>
+	.plate-text {
+		font-family: 'Arial Black', 'Arial Bold', Arial, sans-serif;
+		font-weight: 900;
+		font-size: 1rem;
+		letter-spacing: 0.08em;
+		color: #111;
+	}
+</style>
