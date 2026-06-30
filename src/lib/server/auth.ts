@@ -2,7 +2,6 @@ import { chromium } from 'playwright';
 import { createGuardrails, generate } from 'otplib';
 import { env } from '$env/dynamic/private';
 import { debug } from './log.js';
-import { notify } from './notify.js';
 import { BROWSER_HEADERS } from './http.js';
 import type { Session } from './http.js';
 
@@ -90,10 +89,12 @@ export async function authenticate(): Promise<Session> {
 		return { cookies, secureToken };
 	} catch (e) {
 		if (page) {
-			const screenshot = await page.screenshot({ fullPage: true }).catch(() => undefined);
-			if (screenshot) {
-				notify(`JSZP auth failed: ${e}`, { data: screenshot, filename: `auth-fail-${Date.now()}.png` });
-			}
+			const { mkdirSync, writeFileSync } = await import('node:fs');
+			mkdirSync('data/screenshots', { recursive: true });
+			const ts = Date.now();
+			await page.screenshot({ path: `data/screenshots/auth-fail-${ts}.png`, fullPage: true }).catch(() => {});
+			writeFileSync(`data/screenshots/auth-fail-${ts}.html`, await page.content().catch(() => ''));
+			debug('auth', `failure snapshot saved: data/screenshots/auth-fail-${ts}.png`);
 		}
 		throw e;
 	} finally {

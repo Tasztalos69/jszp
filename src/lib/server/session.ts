@@ -99,5 +99,11 @@ export async function getSession(): Promise<Session> {
 	return session!;
 }
 
+export function forceReauth(): void {
+	session = null;
+	lastUsed = 0;
+	if (!authPromise) getSession().catch((e) => error('session', 'reauth failed:', e));
+}
+
 // Warm up session on module load
 getSession().catch((e) => error('session', 'warmup failed:', e));

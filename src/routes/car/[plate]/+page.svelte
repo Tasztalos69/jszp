@@ -124,18 +124,19 @@
 
 	<div class="max-w-2xl mx-auto px-4 sm:px-6 py-6 sm:py-8 flex flex-col gap-6">
 		<!-- Plate -->
-		<div class="flex justify-center items-center gap-4">
-			<button
-				onclick={toggleFav}
-				aria-label={isFavourite ? 'Eltávolítás a kedvencekből' : 'Hozzáadás a kedvencekhez'}
-				class="transition-colors cursor-pointer"
-				class:text-amber-400={isFavourite}
-				class:text-slate-300={!isFavourite}
-			>
-				<StarIcon filled={isFavourite} size={28} />
-			</button>
-
-			<Plate value={v.plate} />
+		<div class="flex justify-center">
+			<div class="relative inline-flex">
+				<Plate value={v.plate} />
+				<button
+					onclick={toggleFav}
+					aria-label={isFavourite ? 'Eltávolítás a kedvencekből' : 'Hozzáadás a kedvencekhez'}
+					class="absolute top-1/2 -translate-y-1/2 -left-10 transition-colors cursor-pointer"
+					class:text-amber-400={isFavourite}
+					class:text-slate-300={!isFavourite}
+				>
+					<StarIcon filled={isFavourite} size={28} />
+				</button>
+			</div>
 		</div>
 
 		<!-- Registration card (forgalmi engedély style) -->

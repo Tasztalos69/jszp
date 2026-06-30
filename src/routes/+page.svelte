@@ -59,6 +59,10 @@
 	};
 
 	const favState = Object.fromEntries(data.recent.map((e) => [e.plate, e.isFavourite]));
+
+	async function reauth() {
+		await fetch('/api/reauth', { method: 'POST' });
+	}
 </script>
 
 <svelte:head>
@@ -145,10 +149,10 @@
 		</div>
 	{/if}
 
-	<!-- Status card -->
-	<div class="w-full max-w-md border-t border-slate-200 mt-2"></div>
+	<!-- Mobile: status + reauth in flow -->
+	<div class="sm:hidden w-full max-w-md border-t border-slate-200 mt-2"></div>
 	<div
-		class="w-full max-w-md bg-white border border-slate-200 rounded-xl px-5 py-4 shadow-sm flex items-center justify-between gap-4"
+		class="sm:hidden w-full max-w-md bg-white border border-slate-200 rounded-xl px-5 py-4 shadow-sm flex items-center justify-between gap-4"
 	>
 		<div class="flex items-center gap-2.5">
 			<span class="size-2.5 rounded-full shrink-0 {statusMeta[serverStatus].dot}" aria-hidden="true"
@@ -159,7 +163,39 @@
 			<span class="text-xs text-slate-400 font-mono truncate">{data.username}</span>
 		{/if}
 	</div>
+	<button
+		onclick={reauth}
+		disabled={serverStatus === 'initializing'}
+		class="sm:hidden text-sm text-slate-400 hover:text-slate-600 transition-colors cursor-pointer py-1 disabled:opacity-40 disabled:pointer-events-none"
+	>
+		Újraautentikáció
+	</button>
 </div>
+
+<!-- Desktop: fixed bottom-right status card — full card transforms to reauth on hover -->
+<button
+	onclick={reauth}
+	disabled={serverStatus === 'initializing'}
+	class="hidden sm:flex fixed bottom-4 right-4 z-50 overflow-hidden bg-white hover:bg-slate-900 border border-slate-200 hover:border-slate-900 rounded-xl px-5 py-4 shadow-lg items-center justify-between gap-4 transition-all duration-200 cursor-pointer group disabled:pointer-events-none"
+>
+	<div
+		class="flex items-center justify-between gap-4 w-full transition-opacity duration-200 group-hover:opacity-0"
+	>
+		<div class="flex items-center gap-2.5">
+			<span class="size-2.5 rounded-full shrink-0 {statusMeta[serverStatus].dot}" aria-hidden="true"
+			></span>
+			<span class="text-sm text-slate-600 whitespace-nowrap">{statusMeta[serverStatus].label}</span>
+		</div>
+		{#if data.username}
+			<span class="text-xs text-slate-400 font-mono truncate max-w-[140px]">{data.username}</span>
+		{/if}
+	</div>
+	<div
+		class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none"
+	>
+		<span class="text-sm font-semibold text-white">↺ Újraautentikáció</span>
+	</div>
+</button>
 
 <style>
 	.plate-text {
