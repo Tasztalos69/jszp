@@ -1,6 +1,6 @@
 import { authenticate } from './auth.js';
 import { notify } from './notify.js';
-import { debug } from './log.js';
+import { debug, error } from './log.js';
 import { processPost } from './http.js';
 import type { Session } from './http.js';
 
@@ -79,7 +79,7 @@ export async function getSession(): Promise<Session> {
 	// Re-check in case a concurrent caller started auth during our isAlive() yield
 	const pending = authPromise;
 	if (pending) {
-		await pending;
+		await (pending as Promise<unknown>);
 		return session!;
 	}
 
@@ -87,7 +87,8 @@ export async function getSession(): Promise<Session> {
 		.catch(async (e) => {
 			session = null;
 			setStatus('broken');
-			await notify(`JSZP auth failed: ${e}`);
+			error('session', 'auth failed:', e);
+			notify(`JSZP auth failed: ${e}`);
 			throw e;
 		})
 		.finally(() => {
@@ -99,4 +100,4 @@ export async function getSession(): Promise<Session> {
 }
 
 // Warm up session on module load
-getSession().catch(() => {});
+getSession().catch((e) => error('session', 'warmup failed:', e));

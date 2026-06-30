@@ -1,22 +1,19 @@
 import { env } from '$env/dynamic/private';
 
-export async function notify(message: string): Promise<void> {
+export function notify(message: string, attachment?: { data: Uint8Array; filename: string }): void {
 	const ntfy = env.NTFY_URL;
-	const discord = env.DISCORD_WEBHOOK_URL;
+	if (!ntfy) return;
 
-	if (ntfy) {
-		fetch(ntfy, {
-			method: 'POST',
-			body: message,
-			headers: { Title: 'JSZP', Priority: 'high' }
-		}).catch(() => {});
-	}
+	const headers: Record<string, string> = {
+		Title: 'JSZP',
+		Priority: 'high',
+		Message: message
+	};
 
-	if (discord) {
-		fetch(discord, {
-			method: 'POST',
-			body: JSON.stringify({ content: message }),
-			headers: { 'Content-Type': 'application/json' }
-		}).catch(() => {});
+	if (attachment) {
+		headers['Filename'] = attachment.filename;
+		fetch(ntfy, { method: 'PUT', headers, body: attachment.data.buffer as ArrayBuffer }).catch(() => {});
+	} else {
+		fetch(ntfy, { method: 'POST', headers, body: message }).catch(() => {});
 	}
 }

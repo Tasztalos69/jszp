@@ -16,7 +16,7 @@ export const GET: RequestHandler = async ({ url }) => {
 		return json(data);
 	} catch (e) {
 		console.error(e);
-		await notify(`JSZP lookup failed for ${plate}: ${e}`);
+		notify(`JSZP lookup failed for ${plate}: ${e}`);
 		return json({ error: 'lookup failed' }, { status: 500 });
 	}
 };

@@ -2,6 +2,7 @@ import { chromium } from 'playwright';
 import { createGuardrails, generate } from 'otplib';
 import { env } from '$env/dynamic/private';
 import { debug } from './log.js';
+import { notify } from './notify.js';
 import { BROWSER_HEADERS } from './http.js';
 import type { Session } from './http.js';
 
@@ -17,11 +18,12 @@ export async function authenticate(): Promise<Session> {
 		throw new Error('Missing UGYFELKAPU_USERNAME, UGYFELKAPU_PASSWORD, or UGYFELKAPU_TOTP_SECRET');
 	}
 
-	let browser;
+	let browser: import('playwright').Browser | undefined;
+	let page: import('playwright').Page | undefined;
 	try {
 		browser = await chromium.launch({ headless: true });
 		const context = await browser.newContext();
-		const page = await context.newPage();
+		page = await context.newPage();
 
 		debug('auth', 'navigating to JSZP');
 		await page.goto(JSZP_URL, { waitUntil: 'networkidle' });
@@ -54,6 +56,7 @@ export async function authenticate(): Promise<Session> {
 		await page.fill('[name="jelszo"]', password);
 		await page.press('[name="jelszo"]', 'Enter');
 
+		debug('auth', `post-login url: ${page.url()}`);
 		debug('auth', 'waiting for TOTP form');
 		await page.waitForSelector('[name="token"]', { timeout: 10_000 });
 		const token = await generate({
@@ -85,6 +88,14 @@ export async function authenticate(): Promise<Session> {
 		debug('auth', `got secureToken=${secureToken}`);
 
 		return { cookies, secureToken };
+	} catch (e) {
+		if (page) {
+			const screenshot = await page.screenshot({ fullPage: true }).catch(() => undefined);
+			if (screenshot) {
+				notify(`JSZP auth failed: ${e}`, { data: screenshot, filename: `auth-fail-${Date.now()}.png` });
+			}
+		}
+		throw e;
 	} finally {
 		await browser?.close();
 	}
