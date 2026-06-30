@@ -1,42 +1,90 @@
-# sv
+# JSZP Lookup
 
-Everything you need to build a Svelte project, powered by [`sv`](https://github.com/sveltejs/cli).
+<p align="center">
+  <img src="static/icons/icon.svg" width="80" alt="JSZP logo" />
+</p>
 
-## Creating a project
+Query Hungarian vehicle data by licence plate via the magyarorszag.hu JSZP service. Requires an Ügyfélkapu+ account with TOTP-based two-factor authentication.
 
-If you're seeing this, you've probably already done this step. Congrats!
+---
 
-```sh
-# create a new project
-npx sv create my-app
+## Self-hosting
+
+### Prerequisites
+
+- [Bun](https://bun.sh) ≥ 1.0
+- [Node.js](https://nodejs.org) ≥ 18
+- An Ügyfélkapu+ account with TOTP-based two-factor authentication
+
+### Installation
+
+```bash
+git clone <repo>
+cd jszp
+bun install
+bunx playwright install chromium --with-deps
 ```
 
-To recreate this project with the same configuration:
+### Configuration
 
-```sh
-# recreate this project
-bun x sv@0.16.1 create --template minimal --types ts --add tailwindcss="plugins:typography" --install bun .
+Copy `.env.example` and fill in the values:
+
+```bash
+cp .env.example .env
 ```
 
-## Developing
+| Variable                 | Description                                           | Required |
+| ------------------------ | ----------------------------------------------------- | -------- |
+| `UGYFELKAPU_USERNAME`    | Ügyfélkapu+ username                                  | ✓        |
+| `UGYFELKAPU_PASSWORD`    | Ügyfélkapu+ password                                  | ✓        |
+| `UGYFELKAPU_TOTP_SECRET` | TOTP secret key                                       | ✓        |
+| `CACHE_MAX_ENTRIES`      | Maximum number of cached entries (default: unlimited) |          |
+| `NTFY_URL`               | ntfy.sh notification URL for auth errors              |          |
+| `DISCORD_WEBHOOK_URL`    | Discord webhook URL for auth errors                   |          |
+| `LOG_LEVEL`              | Set to `debug` for verbose logging                    |          |
 
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
+> **Note:** Passwords containing `#` must be quoted: `UGYFELKAPU_PASSWORD="your#password"`
 
-```sh
-npm run dev
+### Development
 
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
+```bash
+bun dev
 ```
 
-## Building
+### Production build
 
-To create a production version of your app:
-
-```sh
-npm run build
+```bash
+bun run build
+node build
 ```
 
-You can preview the production build with `npm run preview`.
+The app listens on port `3000` by default. Override with the `PORT` environment variable.
 
-> To deploy your app, you may need to install an [adapter](https://svelte.dev/docs/kit/adapters) for your target environment.
+### Cache
+
+Query results are stored in `data/cache.json` (created automatically). This file is not version-controlled.
+
+---
+
+## Docker
+
+### Prerequisites
+
+- [Docker](https://docs.docker.com/get-docker/) and Docker Compose
+
+### Quick start
+
+```bash
+cp .env.example .env
+# Fill in .env
+docker compose up -d
+```
+
+The app will be available on port `3000`. The cache is stored in a named Docker volume and persists across restarts.
+
+### Manual build
+
+```bash
+docker build -t jszp .
+docker run -d --env-file .env -p 3000:3000 -v ./data:/app/data jszp
+```

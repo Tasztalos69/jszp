@@ -1,0 +1,14 @@
+services:
+  jszp:
+    image: ghcr.io/tasztalos69/jszp:latest
+    restart: unless-stopped
+    container_name: jszp
+    hostname: jszp
+    ports:
+      - '3000:3000'
+    env_file: .env
+    volumes:
+      - data:/app/data
+
+volumes:
+  data:
