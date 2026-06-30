@@ -1,12 +1,10 @@
-# JSZP Lookup
-
 <p align="center">
   <img src="static/icons/icon.svg" width="80" alt="JSZP logo" />
 </p>
 
-Query Hungarian vehicle data by licence plate via the magyarorszag.hu JSZP service. Requires an Ügyfélkapu+ account with TOTP-based two-factor authentication.
+<h1 align="center"> JSZP Lookup </h1>
 
----
+Query Hungarian vehicle data by licence plate via the magyarorszag.hu JSZP service. Requires an Ügyfélkapu+ account with TOTP-based two-factor authentication.
 
 ## Self-hosting
 
@@ -19,7 +17,7 @@ Query Hungarian vehicle data by licence plate via the magyarorszag.hu JSZP servi
 ### Installation
 
 ```bash
-git clone <repo>
+gh repo clone Tasztalos69/jszp
 cd jszp
 bun install
 bunx playwright install chromium --with-deps
@@ -63,8 +61,6 @@ The app listens on port `3000` by default. Override with the `PORT` environment 
 ### Cache
 
 Query results are stored in `data/cache.json` (created automatically). This file is not version-controlled.
-
----
 
 ## Docker
 
