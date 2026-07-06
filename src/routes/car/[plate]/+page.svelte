@@ -138,7 +138,7 @@
 			<input
 				id="vehicle-label"
 				type="text"
-				placeholder="Pl. Apukám autója…"
+				placeholder="Pl. Pajkos"
 				maxlength="60"
 				bind:value={label}
 				onblur={saveLabel}
@@ -146,6 +146,6 @@
 			/>
 		</div>
 
-		<VehicleDetail vehicle={v} />
+		<VehicleDetail vehicle={v} cachedPhotoUuids={data.cachedPhotoUuids} />
 	</div>
 </div>

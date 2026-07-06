@@ -4,10 +4,14 @@ import { getStatus } from '$lib/server/session.js';
 import { parseVehicle } from '$lib/parse.js';
 import * as cache from '$lib/server/cache.js';
 import type { PageServerLoad } from './$types.js';
+import type { ParsedVehicle } from '$lib/parse.js';
 
 export const load: PageServerLoad = async ({ params, url }) => {
 	const plate = params.plate.toUpperCase();
 	if (!/^[A-Z0-9]{6,7}$/.test(plate)) throw error(400, 'Érvénytelen rendszám');
+
+	const cachedPhotoUuids = (vehicle: ParsedVehicle) =>
+		(vehicle.motGalleries ?? []).filter((g) => cache.hasPhotoCache(g.uuid)).map((g) => g.uuid);
 
 	if (!url.searchParams.has('refresh')) {
 		const hit = cache.get(plate);
@@ -17,7 +21,8 @@ export const load: PageServerLoad = async ({ params, url }) => {
 				fromCache: true,
 				cachedAt: hit.fetchedAt,
 				isFavourite: cache.isFavourite(plate),
-				label: cache.getLabel(plate)
+				label: cache.getLabel(plate),
+				cachedPhotoUuids: cachedPhotoUuids(hit.vehicle)
 			};
 	}
 
@@ -32,7 +37,8 @@ export const load: PageServerLoad = async ({ params, url }) => {
 			fromCache: false,
 			cachedAt: Date.now(),
 			isFavourite: cache.isFavourite(plate),
-			label: cache.getLabel(plate)
+			label: cache.getLabel(plate),
+			cachedPhotoUuids: cachedPhotoUuids(vehicle)
 		};
 	} catch (e) {
 		const msg = e instanceof Error ? e.message : String(e);

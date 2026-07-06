@@ -1,4 +1,4 @@
-import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
+import { readFileSync, writeFileSync, mkdirSync, existsSync, renameSync } from 'node:fs';
 import { env } from '$env/dynamic/private';
 import { debug } from './log.js';
 import type { ParsedVehicle } from '$lib/parse.js';
@@ -89,6 +89,29 @@ export function getLabel(plate: string): string {
 }
 
 export type RecentEntry = { plate: string; fetchedAt: number; isFavourite: boolean; label: string };
+
+export type MotImage = { alt: string; src: string };
+const IMAGES_DIR = 'data/images';
+
+export function hasPhotoCache(uuid: string): boolean {
+	return existsSync(`${IMAGES_DIR}/${uuid}.json`);
+}
+
+export function getPhotoCache(uuid: string): MotImage[] | null {
+	try {
+		return JSON.parse(readFileSync(`${IMAGES_DIR}/${uuid}.json`, 'utf8')) as MotImage[];
+	} catch {
+		return null;
+	}
+}
+
+export function setPhotoCache(uuid: string, images: MotImage[]): void {
+	mkdirSync(IMAGES_DIR, { recursive: true });
+	const path = `${IMAGES_DIR}/${uuid}.json`;
+	const tmp = `${path}.tmp`;
+	writeFileSync(tmp, JSON.stringify(images));
+	renameSync(tmp, path);
+}
 
 export function list(): RecentEntry[] {
 	const toEntry = (plate: string) => ({

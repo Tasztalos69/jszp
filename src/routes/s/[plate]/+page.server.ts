@@ -9,5 +9,8 @@ export const load: PageServerLoad = ({ params }) => {
 	const hit = cache.get(plate);
 	if (!hit) throw error(404, 'Jármű nem található');
 
-	return { vehicle: hit.vehicle, cachedAt: hit.fetchedAt, label: cache.getLabel(plate) };
+	const cachedPhotoUuids = (hit.vehicle.motGalleries ?? [])
+		.filter((g) => cache.hasPhotoCache(g.uuid))
+		.map((g) => g.uuid);
+	return { vehicle: hit.vehicle, cachedAt: hit.fetchedAt, label: cache.getLabel(plate), cachedPhotoUuids };
 };

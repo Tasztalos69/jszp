@@ -21,6 +21,6 @@
 			<Plate value={v.plate} />
 		</div>
 
-		<VehicleDetail vehicle={v} />
+		<VehicleDetail vehicle={v} cachedPhotoUuids={data.cachedPhotoUuids} allowPhotos={false} />
 	</div>
 </div>

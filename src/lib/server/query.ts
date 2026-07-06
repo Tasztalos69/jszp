@@ -2,6 +2,8 @@ import { randomBytes } from 'crypto';
 import { getSession } from './session.js';
 import { debug } from './log.js';
 import { processPost, BROWSER_HEADERS } from './http.js';
+import { getPhotoCache, setPhotoCache } from './cache.js';
+import type { MotImage } from './cache.js';
 
 const PAGE_URL = 'https://magyarorszag.hu/snap/snut/get_page.php';
 const DATA_CATEGORIES =
@@ -22,6 +24,10 @@ export type VehicleData = {
 	insurance: Record<string, unknown>;
 };
 
+const IMAGE_PAGE_ID = '7815768645110045';
+
+export type { MotImage };
+
 // ponytail: global lock — server stores query state per PHP session, not per tabId.
 // Concurrent lookups would corrupt each other's results.
 let lookupQueue: Promise<unknown> = Promise.resolve();
@@ -31,6 +37,34 @@ export function lookupPlate(plate: string): Promise<VehicleData> {
 	// Chain so the next caller waits, but don't let a failure block the queue forever
 	lookupQueue = result.catch(() => {});
 	return result;
+}
+
+export function fetchMotImages(uuid: string): Promise<MotImage[]> {
+	const result = lookupQueue.then(() => doFetchImages(uuid));
+	lookupQueue = result.catch(() => {});
+	return result;
+}
+
+async function doFetchImages(uuid: string): Promise<MotImage[]> {
+	const cached = getPhotoCache(uuid);
+	if (cached) return cached;
+
+	const session = await getSession();
+	const tabId = makeTabId();
+	await fetch(`${PAGE_URL}?page_id=${IMAGE_PAGE_ID}&panel=D&tab_id=${tabId}`, {
+		headers: { cookie: session.cookies, ...BROWSER_HEADERS }
+	});
+	await processPost(session, '7127936577613334', tabId);
+	const resp = await processPost(session, '7237076094749835', tabId, { picuuid: uuid });
+	const raw = (resp.CtrlValue as Record<string, Record<string, string>>)?.resp?.VALUE ?? '[]';
+	let images: MotImage[];
+	try {
+		images = JSON.parse(raw) as MotImage[];
+	} catch {
+		images = [];
+	}
+	if (images.length > 0) setPhotoCache(uuid, images);
+	return images;
 }
 
 async function doLookup(plate: string): Promise<VehicleData> {

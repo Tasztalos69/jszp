@@ -37,6 +37,7 @@ export type ParsedVehicle = {
 	motExpiry: string;
 	motDefects: string[];
 	motRemarks: string;
+	motGalleries: { uuid: string; date: string }[];
 	// Insurance
 	kgfb: string;
 	claimsNote: string;
@@ -82,6 +83,17 @@ function parseMotDefects(mot: Record<string, unknown>): string[] {
 	return (hibak as Record<string, string>[])
 		.map((h) => Object.values(h).filter(Boolean).join(' '))
 		.filter(Boolean);
+}
+
+function parseMotGalleries(mot: Record<string, unknown>): { uuid: string; date: string }[] {
+	const records = ctrlList(mot, 'layout_list-MuszakiAllapot');
+	if (!records) return [];
+	return records
+		.map((rec) => ({
+			uuid: (rec['hidden-MuszakiAllapot_Galeria-ID'] as string) ?? '',
+			date: (rec['hidden-MuszakiAllapot_Galeria-Datum'] as string) ?? ''
+		}))
+		.filter((g) => g.uuid);
 }
 
 function parseMotRemarks(mot: Record<string, unknown>): string {
@@ -153,6 +165,7 @@ export function parseVehicle(data: VehicleData): ParsedVehicle {
 		motExpiry: parseMotExpiry(data.mot),
 		motDefects: parseMotDefects(data.mot),
 		motRemarks: parseMotRemarks(data.mot),
+		motGalleries: parseMotGalleries(data.mot),
 
 		kgfb: ctrlVal(data.insurance, 'text-2-BiztositasKartortenet-kotelezovel_rendelkezik'),
 		claimsNote: ctrlVal(data.insurance, 'text-2-BiztositasKartortenet-Nincs_adat'),
