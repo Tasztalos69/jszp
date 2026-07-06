@@ -92,7 +92,9 @@ export async function authenticate(): Promise<Session> {
 			const { mkdirSync, writeFileSync } = await import('node:fs');
 			mkdirSync('data/screenshots', { recursive: true });
 			const ts = Date.now();
-			await page.screenshot({ path: `data/screenshots/auth-fail-${ts}.png`, fullPage: true }).catch(() => {});
+			await page
+				.screenshot({ path: `data/screenshots/auth-fail-${ts}.png`, fullPage: true })
+				.catch(() => {});
 			writeFileSync(`data/screenshots/auth-fail-${ts}.html`, await page.content().catch(() => ''));
 			debug('auth', `failure snapshot saved: data/screenshots/auth-fail-${ts}.png`);
 		}

@@ -16,7 +16,8 @@ export const load: PageServerLoad = async ({ params, url }) => {
 				vehicle: hit.vehicle,
 				fromCache: true,
 				cachedAt: hit.fetchedAt,
-				isFavourite: cache.isFavourite(plate)
+				isFavourite: cache.isFavourite(plate),
+				label: cache.getLabel(plate)
 			};
 	}
 
@@ -30,7 +31,8 @@ export const load: PageServerLoad = async ({ params, url }) => {
 			vehicle,
 			fromCache: false,
 			cachedAt: Date.now(),
-			isFavourite: cache.isFavourite(plate)
+			isFavourite: cache.isFavourite(plate),
+			label: cache.getLabel(plate)
 		};
 	} catch (e) {
 		const msg = e instanceof Error ? e.message : String(e);

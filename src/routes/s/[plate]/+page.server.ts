@@ -9,5 +9,5 @@ export const load: PageServerLoad = ({ params }) => {
 	const hit = cache.get(plate);
 	if (!hit) throw error(404, 'Jármű nem található');
 
-	return { vehicle: hit.vehicle, cachedAt: hit.fetchedAt };
+	return { vehicle: hit.vehicle, cachedAt: hit.fetchedAt, label: cache.getLabel(plate) };
 };

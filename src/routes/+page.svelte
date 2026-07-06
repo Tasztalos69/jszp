@@ -132,11 +132,18 @@
 					href={resolve(`/car/${entry.plate}`)}
 					class="bg-white border border-slate-200 rounded-xl px-4 py-3 flex items-center justify-between gap-3 hover:border-slate-400 transition-colors shadow-sm"
 				>
-					<div class="flex items-center gap-2.5">
+					<div class="flex items-center gap-2.5 min-w-0">
 						{#if favState[entry.plate]}
 							<span class="text-amber-400 shrink-0"><StarIcon filled size={14} /></span>
 						{/if}
-						<span class="plate-text">{entry.plate}</span>
+						<div class="flex flex-col min-w-0">
+							{#if entry.label}
+								<span class="text-sm font-medium text-slate-700 truncate">{entry.label}</span>
+								<span class="plate-text text-xs">{entry.plate}</span>
+							{:else}
+								<span class="plate-text">{entry.plate}</span>
+							{/if}
+						</div>
 					</div>
 					<span class="text-xs text-slate-400 shrink-0">
 						{new Date(entry.fetchedAt).toLocaleString('hu-HU', {
