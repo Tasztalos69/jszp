@@ -11,7 +11,7 @@
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
 		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
 		"lint": "eslint .",
-		"lint:fix": "eslint . --fx",
+		"lint:fix": "eslint . --fix",
 		"fmt": "prettier --write .",
 		"fmt:check": "prettier --check ."
 	},

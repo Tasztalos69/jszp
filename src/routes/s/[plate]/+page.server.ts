@@ -12,5 +12,10 @@ export const load: PageServerLoad = ({ params }) => {
 	const cachedPhotoUuids = (hit.vehicle.motGalleries ?? [])
 		.filter((g) => cache.hasPhotoCache(g.uuid))
 		.map((g) => g.uuid);
-	return { vehicle: hit.vehicle, cachedAt: hit.fetchedAt, label: cache.getLabel(plate), cachedPhotoUuids };
+	return {
+		vehicle: hit.vehicle,
+		cachedAt: hit.fetchedAt,
+		label: cache.getLabel(plate),
+		cachedPhotoUuids
+	};
 };
