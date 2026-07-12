@@ -98,6 +98,17 @@
 	</div>
 </div>
 
+<!-- Current odometer -->
+{#if v.odometer.length > 0}
+	{@const latest = v.odometer.at(-1)}
+	<div
+		class="bg-white border border-slate-200 rounded-xl px-4 py-3 flex items-baseline justify-between gap-3"
+	>
+		<span class="text-sm text-slate-500">Aktuális óraállás <span class="text-slate-400">({latest?.date})</span></span>
+		<span class="text-sm font-semibold text-slate-900 tabular-nums">{latest?.km.toLocaleString('hu-HU')} km</span>
+	</div>
+{/if}
+
 <!-- Weights -->
 {#if v.ownWeight || v.grossWeight}
 	<div class="bg-white border border-slate-200 rounded-xl overflow-hidden">

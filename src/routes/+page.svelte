@@ -206,7 +206,7 @@
 
 <style>
 	.plate-text {
-		font-family: 'Arial Black', 'Arial Bold', Arial, sans-serif;
+		font-family: 'Arial Black', 'Arial Bold', 'Titillium Web', Arial, sans-serif;
 		font-weight: 900;
 		font-size: 1rem;
 		letter-spacing: 0.08em;
