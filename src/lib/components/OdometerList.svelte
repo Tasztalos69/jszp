@@ -5,11 +5,12 @@
 
 	const rows = $derived(
 		entries
+			.filter((e) => e.km !== null && e.km !== undefined)
 			.slice()
 			.reverse()
 			.map((entry, i, arr) => {
 				const prev = arr[i + 1];
-				const delta = prev ? entry.km - prev.km : null;
+				const delta = prev ? entry.km! - prev.km! : null;
 				return { ...entry, delta };
 			})
 	);

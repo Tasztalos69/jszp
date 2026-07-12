@@ -1,6 +1,6 @@
 import type { VehicleData } from './server/query.js';
 
-export type OdometerEntry = { date: string; km: number };
+export type OdometerEntry = { date: string; km: number | null };
 
 export type ParsedVehicle = {
 	plate: string;
@@ -111,16 +111,18 @@ function parseOdometer(odometer: Record<string, unknown>): OdometerEntry[] {
 	const rows = (cv?.['datatable-FutasTeljesitmeny_RogzitettOraAllasok'] as { VALUE?: unknown[][] })
 		?.VALUE?.[0];
 	if (!Array.isArray(rows)) return [];
-	return rows.map((r) => ({
-		date:
-			(r as Record<string, string>)['datatable_header-RogzitettOraAllasok_Rogzites_datuma'] ?? '',
-		km: parseInt(
-			(
-				(r as Record<string, string>)['datatable_header-RogzitettOraAllasok_Oraallas'] ?? '0'
-			).replace(/\s/g, ''),
-			10
-		)
-	}));
+	return rows.map((r) => {
+		const date =
+			(r as Record<string, string>)['datatable_header-RogzitettOraAllasok_Rogzites_datuma'] ?? '';
+
+		const kmRaw = (r as Record<string, string>)['datatable_header-RogzitettOraAllasok_Oraallas'];
+		const km =
+			kmRaw !== null && kmRaw !== undefined ? Number.parseInt(kmRaw.replace(/\s/g, ''), 10) : null;
+		return {
+			date: date,
+			km: km !== null && km !== undefined && !isNaN(km) ? km : null
+		};
+	});
 }
 
 export function parseVehicle(data: VehicleData): ParsedVehicle {
