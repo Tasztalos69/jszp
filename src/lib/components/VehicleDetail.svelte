@@ -177,6 +177,26 @@
 				<dd class="text-xs text-slate-400 text-right max-w-[60%]">{v.originNote}</dd>
 			</div>
 		{/if}
+		<a
+			href="https://nemzetiutdij.hu/hu/e-matrica/matrica-lekerdezes"
+			target="_blank"
+			rel="noopener noreferrer"
+			class="flex items-center justify-between gap-3 px-4 py-3 text-blue-700 hover:bg-slate-50 hover:text-blue-800 transition-colors"
+		>
+			<span class="text-sm">Matrica lekérdezése</span>
+			<svg
+				width="14"
+				height="14"
+				viewBox="0 0 24 24"
+				fill="none"
+				stroke="currentColor"
+				stroke-width="2.5"
+				stroke-linecap="round"
+				stroke-linejoin="round"
+				class="shrink-0"
+				aria-hidden="true"><path d="M7 17 17 7M7 7h10v10" /></svg
+			>
+		</a>
 	</dl>
 </div>
 
