@@ -1,4 +1,7 @@
 import { env } from '$env/dynamic/private';
+import { version } from '../package.json';
+
+console.log(`jszp v${version} starting`);
 
 const required = ['UGYFELKAPU_USERNAME', 'UGYFELKAPU_PASSWORD', 'UGYFELKAPU_TOTP_SECRET'];
 const missing = required.filter((k) => !env[k]);

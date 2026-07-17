@@ -36,7 +36,7 @@
 	{#each rows as row (row.date + row.km + row.delta)}
 		<span class="px-3 py-2.5 border-t border-slate-200 text-slate-500 text-xs">{row.date}</span>
 		<span class="px-3 py-2.5 border-t border-slate-200 font-semibold tabular-nums"
-			>{fmt(row.km)} km</span
+			>{fmt(row.km ?? 0)} km</span
 		>
 		<span class="px-3 py-2.5 border-t border-slate-200 text-slate-500 tabular-nums">
 			{#if row.delta !== null}+{fmt(row.delta)} km{:else}—{/if}
