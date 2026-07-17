@@ -60,6 +60,8 @@
 
 	const favState = Object.fromEntries(data.recent.map((e) => [e.plate, e.isFavourite]));
 
+	let search = $state('');
+
 	async function reauth() {
 		await fetch('/api/reauth', { method: 'POST' });
 	}
@@ -125,9 +127,28 @@
 		{@const sorted = [...data.recent].sort(
 			(a, b) => (favState[b.plate] ? 1 : 0) - (favState[a.plate] ? 1 : 0)
 		)}
+		{@const q = search.trim().toUpperCase()}
+		{@const filtered = q
+			? sorted.filter((e) => e.plate.includes(q) || e.label?.toUpperCase().includes(q))
+			: sorted}
 		<div class="w-full max-w-md flex flex-col gap-2">
-			<p class="text-xs font-bold uppercase tracking-widest text-slate-400">Korábbi lekérdezések</p>
-			{#each sorted as entry (entry.plate)}
+			<div class="flex items-center justify-between">
+				<p class="text-xs font-bold uppercase tracking-widest text-slate-400">
+					Korábbi lekérdezések
+				</p>
+				{#if data.recent.length > 4}
+					<input
+						type="search"
+						bind:value={search}
+						placeholder="Keresés…"
+						class="w-32 sm:w-40 text-xs bg-white border border-slate-200 rounded-lg px-2.5 py-1.5 text-slate-700 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-300"
+					/>
+				{/if}
+			</div>
+			{#if filtered.length === 0}
+				<p class="text-sm text-slate-400 px-1">Nincs találat.</p>
+			{/if}
+			{#each filtered as entry (entry.plate)}
 				<a
 					href={resolve(`/car/${entry.plate}`)}
 					class="bg-white border border-slate-200 rounded-xl px-4 py-3 flex items-center justify-between gap-3 hover:border-slate-400 transition-colors shadow-sm"
