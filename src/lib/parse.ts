@@ -22,6 +22,9 @@ export type ParsedVehicle = {
 	// Weights
 	ownWeight: string;
 	grossWeight: string;
+	awd: string;
+	engineNumber: string;
+	emissionClass: string;
 	// Registration
 	firstReg: string;
 	firstHuReg: string;
@@ -96,6 +99,14 @@ function parseMotGalleries(mot: Record<string, unknown>): { uuid: string; date: 
 		.filter((g) => g.uuid);
 }
 
+function parseAwd(mot: Record<string, unknown>): string {
+	const rec = latestMotRecord(mot);
+	if (!rec) return '';
+	const list = rec['layout_list-MuszakiAllapot-MuszakiAdatok'];
+	const data = Array.isArray(list) ? (list as Record<string, string>[])[0] : null;
+	return data?.['text-MuszakiAllapot-Osszkerekhajtas'] ?? '';
+}
+
 function parseMotRemarks(mot: Record<string, unknown>): string {
 	const rec = latestMotRecord(mot);
 	if (!rec) return '';
@@ -148,10 +159,13 @@ export function parseVehicle(data: VehicleData): ParsedVehicle {
 		powerLe: kwToLe(powerKw),
 		fuel: (motor['text-Uzemanyag'] as string) ?? '',
 		transmission: (motor['text-Sebessegvalto'] as string) ?? '',
+		engineNumber: (motor['text-Motorszam'] as string) ?? '',
+		emissionClass: (motor['text-KvOsztaly'] as string) ?? '',
 		color: (tech['text-Szin'] as string) ?? '',
 		seats: (tech['text-UlohelySzam'] as string) ?? '',
 		ownWeight: (tech['text-SajatTomeg'] as string) ?? '',
 		grossWeight: (tech['text-EgyuttesTomeg'] as string) ?? '',
+		awd: parseAwd(data.mot),
 
 		firstReg: (alap['text-ElsoForgHelyezes'] as string) ?? '',
 		firstHuReg: (alap['text-ElsoMoForgHelyezes'] as string) ?? '',

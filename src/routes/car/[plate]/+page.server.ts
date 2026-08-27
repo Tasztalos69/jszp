@@ -3,6 +3,7 @@ import { lookupPlate } from '$lib/server/query.js';
 import { getStatus } from '$lib/server/session.js';
 import { parseVehicle } from '$lib/parse.js';
 import * as cache from '$lib/server/cache.js';
+import { buildHasznaltautoUrl } from '$lib/server/hasznaltauto.js';
 import type { PageServerLoad } from './$types.js';
 import type { ParsedVehicle } from '$lib/parse.js';
 
@@ -22,7 +23,8 @@ export const load: PageServerLoad = async ({ params, url }) => {
 				cachedAt: hit.fetchedAt,
 				isFavourite: cache.isFavourite(plate),
 				label: cache.getLabel(plate),
-				cachedPhotoUuids: cachedPhotoUuids(hit.vehicle)
+				cachedPhotoUuids: cachedPhotoUuids(hit.vehicle),
+				hasznaltautoUrl: buildHasznaltautoUrl(hit.vehicle)
 			};
 	}
 
@@ -38,7 +40,8 @@ export const load: PageServerLoad = async ({ params, url }) => {
 			cachedAt: Date.now(),
 			isFavourite: cache.isFavourite(plate),
 			label: cache.getLabel(plate),
-			cachedPhotoUuids: cachedPhotoUuids(vehicle)
+			cachedPhotoUuids: cachedPhotoUuids(vehicle),
+			hasznaltautoUrl: buildHasznaltautoUrl(vehicle)
 		};
 	} catch (e) {
 		const msg = e instanceof Error ? e.message : String(e);

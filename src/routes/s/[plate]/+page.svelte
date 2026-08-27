@@ -1,6 +1,7 @@
 <script lang="ts">
 	import Plate from '$lib/components/Plate.svelte';
 	import VehicleDetail from '$lib/components/VehicleDetail.svelte';
+	import FetchDate from '$lib/components/FetchDate.svelte';
 	import type { PageData } from './$types.js';
 
 	let { data }: { data: PageData } = $props();
@@ -22,5 +23,7 @@
 		</div>
 
 		<VehicleDetail vehicle={v} cachedPhotoUuids={data.cachedPhotoUuids} allowPhotos={false} />
+
+		<FetchDate queryDate={v.queryDate} />
 	</div>
 </div>
