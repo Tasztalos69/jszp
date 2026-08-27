@@ -1,5 +1,6 @@
 import { error } from '@sveltejs/kit';
 import * as cache from '$lib/server/cache.js';
+import { buildHasznaltautoUrl } from '$lib/server/hasznaltauto.js';
 import type { PageServerLoad } from './$types.js';
 
 export const load: PageServerLoad = ({ params }) => {
@@ -16,6 +17,7 @@ export const load: PageServerLoad = ({ params }) => {
 		vehicle: hit.vehicle,
 		cachedAt: hit.fetchedAt,
 		label: cache.getLabel(plate),
-		cachedPhotoUuids
+		cachedPhotoUuids,
+		hasznaltautoUrl: buildHasznaltautoUrl(hit.vehicle)
 	};
 };

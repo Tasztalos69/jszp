@@ -1,6 +1,7 @@
 <script lang="ts">
 	import Plate from '$lib/components/Plate.svelte';
 	import VehicleDetail from '$lib/components/VehicleDetail.svelte';
+	import UsefulLinksCard from '$lib/components/UsefulLinksCard.svelte';
 	import FetchDate from '$lib/components/FetchDate.svelte';
 	import AppVersionFooter from '$lib/components/AppVersionFooter.svelte';
 	import type { PageData } from './$types.js';
@@ -24,6 +25,8 @@
 		</div>
 
 		<VehicleDetail vehicle={v} cachedPhotoUuids={data.cachedPhotoUuids} allowPhotos={false} />
+
+		<UsefulLinksCard plate={v.plate} hasznaltautoUrl={data.hasznaltautoUrl} />
 
 		<FetchDate queryDate={v.queryDate} />
 
