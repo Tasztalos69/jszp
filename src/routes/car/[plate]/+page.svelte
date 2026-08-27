@@ -6,6 +6,7 @@
 	import UsefulLinksCard from '$lib/components/UsefulLinksCard.svelte';
 	import VehicleLabelInput from '$lib/components/VehicleLabelInput.svelte';
 	import FetchDate from '$lib/components/FetchDate.svelte';
+	import AppVersionFooter from '$lib/components/AppVersionFooter.svelte';
 	import type { PageData } from './$types.js';
 
 	let { data }: { data: PageData } = $props();
@@ -54,5 +55,7 @@
 		<UsefulLinksCard plate={v.plate} hasznaltautoUrl={data.hasznaltautoUrl} />
 
 		<FetchDate queryDate={v.queryDate} />
+
+		<AppVersionFooter />
 	</div>
 </div>

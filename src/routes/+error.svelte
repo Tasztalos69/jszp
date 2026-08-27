@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { page } from '$app/state';
 	import { resolve } from '$app/paths';
+	import AppVersionFooter from '$lib/components/AppVersionFooter.svelte';
 
 	const status = $derived(page.status);
 	const message = $derived(page.error?.message ?? 'Ismeretlen hiba történt.');
@@ -18,7 +19,7 @@
 	<title>{title} | JSZP</title>
 </svelte:head>
 
-<div class="min-h-dvh flex flex-col items-center justify-center bg-slate-50 px-4">
+<div class="min-h-dvh flex flex-col items-center justify-center bg-slate-50 px-4 gap-6">
 	<div
 		class="w-full max-w-md bg-white border border-slate-200 rounded-2xl px-8 py-10 shadow-sm text-center"
 	>
@@ -43,4 +44,6 @@
 			Vissza a keresőhöz
 		</a>
 	</div>
+
+	<AppVersionFooter />
 </div>

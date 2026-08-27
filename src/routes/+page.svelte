@@ -2,6 +2,7 @@
 	import { goto, beforeNavigate, afterNavigate } from '$app/navigation';
 	import PlateInput from '$lib/components/PlateInput.svelte';
 	import StarIcon from '$lib/components/StarIcon.svelte';
+	import AppVersionFooter from '$lib/components/AppVersionFooter.svelte';
 	import type { PageData } from './$types.js';
 	import { resolve } from '$app/paths';
 
@@ -87,7 +88,7 @@
 	</div>
 {/if}
 
-<div class="min-h-dvh flex flex-col items-center justify-center bg-slate-50 px-4 gap-4 py-8">
+<div class="min-h-dvh flex flex-col items-center bg-slate-50 px-4 gap-4 py-8">
 	<main class="w-full max-w-md bg-white border border-slate-200 rounded-2xl px-8 py-10 shadow-sm">
 		<h1 class="text-3xl font-extrabold text-slate-900 text-center tracking-tight mb-1">JSZP</h1>
 		<p class="text-sm text-slate-500 text-center mb-8">Járműadatok lekérdezése</p>
@@ -177,27 +178,33 @@
 		</div>
 	{/if}
 
-	<!-- Mobile: status + reauth in flow -->
-	<div class="sm:hidden w-full max-w-md border-t border-slate-200 mt-2"></div>
-	<div
-		class="sm:hidden w-full max-w-md bg-white border border-slate-200 rounded-xl px-5 py-4 shadow-sm flex items-center justify-between gap-4"
-	>
-		<div class="flex items-center gap-2.5">
-			<span class="size-2.5 rounded-full shrink-0 {statusMeta[serverStatus].dot}" aria-hidden="true"
-			></span>
-			<span class="text-sm text-slate-600">{statusMeta[serverStatus].label}</span>
+	<!-- Mobile: status + reauth pinned to the bottom of the viewport; scrolls with content once it overflows -->
+	<div class="mt-auto flex w-full flex-col items-center gap-4">
+		<div class="sm:hidden w-full max-w-md border-t border-slate-200"></div>
+		<div
+			class="sm:hidden w-full max-w-md bg-white border border-slate-200 rounded-xl px-5 py-4 shadow-sm flex items-center justify-between gap-4"
+		>
+			<div class="flex items-center gap-2.5">
+				<span
+					class="size-2.5 rounded-full shrink-0 {statusMeta[serverStatus].dot}"
+					aria-hidden="true"
+				></span>
+				<span class="text-sm text-slate-600">{statusMeta[serverStatus].label}</span>
+			</div>
+			{#if data.username}
+				<span class="text-xs text-slate-400 font-mono truncate">{data.username}</span>
+			{/if}
 		</div>
-		{#if data.username}
-			<span class="text-xs text-slate-400 font-mono truncate">{data.username}</span>
-		{/if}
+		<button
+			onclick={reauth}
+			disabled={serverStatus === 'initializing'}
+			class="sm:hidden text-sm text-slate-400 hover:text-slate-600 transition-colors cursor-pointer py-1 disabled:opacity-40 disabled:pointer-events-none"
+		>
+			Újraautentikáció
+		</button>
+
+		<AppVersionFooter fixedOnDesktop />
 	</div>
-	<button
-		onclick={reauth}
-		disabled={serverStatus === 'initializing'}
-		class="sm:hidden text-sm text-slate-400 hover:text-slate-600 transition-colors cursor-pointer py-1 disabled:opacity-40 disabled:pointer-events-none"
-	>
-		Újraautentikáció
-	</button>
 </div>
 
 <!-- Desktop: fixed bottom-right status card — full card transforms to reauth on hover -->

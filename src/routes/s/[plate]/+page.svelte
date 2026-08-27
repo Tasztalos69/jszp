@@ -2,6 +2,7 @@
 	import Plate from '$lib/components/Plate.svelte';
 	import VehicleDetail from '$lib/components/VehicleDetail.svelte';
 	import FetchDate from '$lib/components/FetchDate.svelte';
+	import AppVersionFooter from '$lib/components/AppVersionFooter.svelte';
 	import type { PageData } from './$types.js';
 
 	let { data }: { data: PageData } = $props();
@@ -25,5 +26,7 @@
 		<VehicleDetail vehicle={v} cachedPhotoUuids={data.cachedPhotoUuids} allowPhotos={false} />
 
 		<FetchDate queryDate={v.queryDate} />
+
+		<AppVersionFooter />
 	</div>
 </div>
