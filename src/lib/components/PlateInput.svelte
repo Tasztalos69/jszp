@@ -20,8 +20,12 @@
 		{placeholder}
 		maxlength="7"
 		autocomplete="off"
+		autocorrect="off"
 		autocapitalize="characters"
 		spellcheck="false"
+		data-1p-ignore
+		data-lpignore="true"
+		data-form-type="other"
 		aria-label="Rendszám"
 		{value}
 		{oninput}
