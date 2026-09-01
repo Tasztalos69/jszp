@@ -42,6 +42,7 @@
 		"@sveltejs/adapter-node": "^5.5.7",
 		"lucide-svelte": "^1.0.1",
 		"otplib": "^13.4.1",
-		"playwright": "^1.61.1"
+		"playwright": "^1.61.1",
+		"rfc4648": "^1.5.4"
 	}
 }
