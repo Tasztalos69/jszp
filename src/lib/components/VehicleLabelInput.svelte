@@ -1,7 +1,9 @@
 <script lang="ts">
+	import { untrack } from 'svelte';
+
 	let { plate, label = '' }: { plate: string; label?: string } = $props();
 
-	let value = $state(label);
+	let value = $state(untrack(() => label));
 
 	async function save() {
 		await fetch('/api/label', {

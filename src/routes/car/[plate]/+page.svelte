@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { untrack } from 'svelte';
 	import Plate from '$lib/components/Plate.svelte';
 	import StarIcon from '$lib/components/StarIcon.svelte';
 	import VehicleDetail from '$lib/components/VehicleDetail.svelte';
@@ -12,7 +13,7 @@
 	let { data }: { data: PageData } = $props();
 	const v = $derived(data.vehicle);
 
-	let isFavourite = $state(data.isFavourite);
+	let isFavourite = $state(untrack(() => data.isFavourite));
 
 	async function toggleFav() {
 		isFavourite = !isFavourite;

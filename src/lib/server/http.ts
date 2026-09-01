@@ -1,6 +1,6 @@
 import { debug } from './log.js';
 
-export const PROCESS_URL = 'https://magyarorszag.hu/snap/repo03/mapper/process.php';
+const PROCESS_URL = 'https://magyarorszag.hu/snap/repo03/mapper/process.php';
 export const BROWSER_HEADERS = {
 	'User-Agent':
 		'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:131.0) Gecko/20100101 Firefox/131.0',

@@ -32,3 +32,38 @@ jobs:
           restore-keys: bun-
       - run: bun install --frozen-lockfile
       - run: bun run fmt:check
+
+  svelte:
+    name: Svelte Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: oven-sh/setup-bun@v2
+      - uses: actions/cache@v6
+        with:
+          path: ~/.bun/install/cache
+          key: bun-${{ hashFiles('bun.lock') }}
+          restore-keys: bun-
+      - run: bun install --frozen-lockfile
+      - run: bun run svelte:check
+
+  knip:
+    name: Knip
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: oven-sh/setup-bun@v2
+      - name: Cache Bun
+        uses: actions/cache@v6
+        with:
+          path: ~/.bun/install/cache
+          key: bun-${{ hashFiles('bun.lock') }}
+          restore-keys: bun-
+
+      - name: Cache Knip
+        uses: actions/cache@v6
+        with:
+          path: ./node_modules/.cache/knip
+          key: knip
+      - run: bun install --frozen-lockfile
+      - run: bun run knip --cache --treat-config-hints-as-errors --reporter github-actions

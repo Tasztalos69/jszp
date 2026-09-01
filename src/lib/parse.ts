@@ -1,6 +1,6 @@
 import type { VehicleData } from './server/query.js';
 
-export type OdometerEntry = { date: string; km: number | null };
+type OdometerEntry = { date: string; km: number | null };
 
 export type ParsedVehicle = {
 	plate: string;

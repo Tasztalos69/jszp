@@ -59,7 +59,7 @@
 		broken: { label: 'Kapcsolat sikertelen', dot: 'bg-red-500' }
 	};
 
-	const favState = Object.fromEntries(data.recent.map((e) => [e.plate, e.isFavourite]));
+	const favState = $derived(Object.fromEntries(data.recent.map((e) => [e.plate, e.isFavourite])));
 
 	let search = $state('');
 

@@ -11,10 +11,15 @@
 	type PhotoState = 'loading' | 'error' | { alt: string; src: string }[];
 	let photoState = $state<Record<string, PhotoState>>({});
 	let selectedPhoto = $state<{ src: string; alt: string } | null>(null);
+	let dialogEl = $state<HTMLDivElement>();
 
 	function closePhoto() {
 		selectedPhoto = null;
 	}
+
+	$effect(() => {
+		if (selectedPhoto) dialogEl?.focus();
+	});
 
 	async function loadPhotos(uuid: string) {
 		photoState[uuid] = 'loading';
@@ -73,7 +78,7 @@
 							{#each state as img, i (i)}
 								<button
 									onclick={() => (selectedPhoto = img)}
-									class="flex-shrink-0 cursor-pointer active:scale-95 transition-transform duration-150 rounded-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-500"
+									class="shrink-0 cursor-pointer active:scale-95 transition-transform duration-150 rounded-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-500"
 									aria-label="Fotó megnyitása"
 								>
 									<img src={img.src} alt={img.alt} class="h-36 w-auto rounded-lg object-cover" />
@@ -90,19 +95,20 @@
 <svelte:window onkeydown={(e) => selectedPhoto && e.key === 'Escape' && closePhoto()} />
 
 {#if selectedPhoto}
-	<!-- svelte-ignore a11y_click_events_have_key_events a11y_no_noninteractive_element_interactions -->
+	<!-- svelte-ignore a11y_click_events_have_key_events -->
 	<div
+		bind:this={dialogEl}
 		role="dialog"
 		aria-modal="true"
+		tabindex="-1"
 		class="fixed inset-0 z-50 flex items-center justify-center bg-black/85 overscroll-contain"
-		onclick={closePhoto}
+		onclick={(e) => e.target === e.currentTarget && closePhoto()}
 		transition:fade={{ duration: 200 }}
 	>
 		<img
 			src={selectedPhoto.src}
 			alt={selectedPhoto.alt}
 			class="max-h-[90dvh] max-w-[calc(100vw-2rem)] object-contain rounded-lg shadow-2xl"
-			onclick={(e) => e.stopPropagation()}
 		/>
 		<button
 			onclick={closePhoto}
