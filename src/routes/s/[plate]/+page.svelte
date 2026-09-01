@@ -26,7 +26,11 @@
 
 		<VehicleDetail vehicle={v} cachedPhotoUuids={data.cachedPhotoUuids} allowPhotos={false} />
 
-		<UsefulLinksCard plate={v.plate} hasznaltautoUrl={data.hasznaltautoUrl} />
+		<UsefulLinksCard
+			plate={v.plate}
+			hasznaltautoUrl={data.hasznaltautoUrl}
+			kocsiUrl={data.kocsiUrl}
+		/>
 
 		<FetchDate queryDate={v.queryDate} />
 

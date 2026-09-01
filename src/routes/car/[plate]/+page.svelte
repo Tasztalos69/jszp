@@ -52,7 +52,11 @@
 
 		<VehicleLabelInput plate={v.plate} label={data.label} />
 
-		<UsefulLinksCard plate={v.plate} hasznaltautoUrl={data.hasznaltautoUrl} />
+		<UsefulLinksCard
+			plate={v.plate}
+			hasznaltautoUrl={data.hasznaltautoUrl}
+			kocsiUrl={data.kocsiUrl}
+		/>
 
 		<FetchDate queryDate={v.queryDate} />
 

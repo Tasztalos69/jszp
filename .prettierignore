@@ -8,5 +8,8 @@ bun.lockb
 # Miscellaneous
 /static/
 
-# json
-src/lib/server/hasznaltauto-data.json
+# Development temp files
+dev/
+
+# json data files
+*-data.json
